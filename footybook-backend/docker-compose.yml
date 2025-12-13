@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: footybook_postgres
+    environment:
+      POSTGRES_DB: footybook_db
+      POSTGRES_USER: footybook_user
+      POSTGRES_PASSWORD: footybook_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - footybook_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: footybook_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@footybook.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - footybook_network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+
+networks:
+  footybook_network:
+    driver: bridge
