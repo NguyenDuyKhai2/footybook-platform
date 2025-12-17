@@ -1,0 +1,38 @@
+/* Football field green colors */
+.field-green {
+  @apply bg-green-600;
+}
+
+.field-line {
+  @apply border-white border-2;
+}
+
+/* Status colors */
+.status-pending {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-confirmed {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.status-completed {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-cancelled {
+  @apply bg-red-100 text-red-800;
+}
+
+/* Field type badges */
+.field-5 {
+  @apply bg-emerald-500 text-white;
+}
+
+.field-7 {
+  @apply bg-blue-500 text-white;
+}
+
+.field-11 {
+  @apply bg-purple-500 text-white;
+}

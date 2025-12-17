@@ -82,26 +82,65 @@ INSERT INTO venues (
     )
 ON CONFLICT (slug) DO NOTHING;
 
--- 5. FIELDS (Sân con - Table 'fields' chưa có entity nhưng Booking cần field_id)
--- Giả định cấu trúc bảng fields dựa trên Booking references
+-- 5. FIELDS (Cập nhật đầy đủ: Sân độc lập + Sân Cha + Sân Con)
 INSERT INTO fields (
-    id, venue_id, field_type_id, name, is_sub_field, status, display_order,
+    id, venue_id, field_type_id, parent_field_id, -- Thêm cột parent_field_id
+    name, is_sub_field, status, display_order,
     created_at, updated_at, version, deleted, created_by, updated_by
 ) VALUES
-      (
-          '950e8400-e29b-41d4-a716-446655440001',
-          (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
-          (SELECT id FROM field_types WHERE field_size = 'FIELD_5' LIMIT 1),
-          'Sân 5A', false, 'AVAILABLE', 1,
-          NOW(), NOW(), 0, false, 'system', 'system'
-      ),
-      (
-          '950e8400-e29b-41d4-a716-446655440002',
-          (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
-          (SELECT id FROM field_types WHERE field_size = 'FIELD_5' LIMIT 1),
-          'Sân 5B', false, 'AVAILABLE', 2,
-          NOW(), NOW(), 0, false, 'system', 'system'
-      )
+-- A. Các sân 5 người độc lập (Không liên quan sân 7)
+(
+    '950e8400-e29b-41d4-a716-446655440001',
+    (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
+    (SELECT id FROM field_types WHERE field_size = 'FIELD_5' LIMIT 1),
+    NULL, -- Không có cha
+    'Sân 5A', false, 'AVAILABLE', 1,
+    NOW(), NOW(), 0, false, 'system', 'system'
+),
+(
+    '950e8400-e29b-41d4-a716-446655440002',
+    (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
+    (SELECT id FROM field_types WHERE field_size = 'FIELD_5' LIMIT 1),
+    NULL,
+    'Sân 5B', false, 'AVAILABLE', 2,
+    NOW(), NOW(), 0, false, 'system', 'system'
+),
+
+-- B. Sân 7 người (Sân CHA)
+(
+    '950e8400-e29b-41d4-a716-446655440003', -- ID Sân 7
+    (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
+    (SELECT id FROM field_types WHERE field_size = 'FIELD_7' LIMIT 1), -- Loại sân 7
+    NULL,
+    'Sân 7A', false, 'AVAILABLE', 3,
+    NOW(), NOW(), 0, false, 'system', 'system'
+),
+
+-- C. 3 Sân 5 người tách từ Sân 7A (Sân CON)
+(
+    '950e8400-e29b-41d4-a716-446655440010',
+    (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
+    (SELECT id FROM field_types WHERE field_size = 'FIELD_5' LIMIT 1),
+    (SELECT id FROM fields WHERE name = 'Sân 7A' LIMIT 1), -- Trỏ về cha Sân 7A
+    'Sân 7A-1', true, 'AVAILABLE', 4,
+    NOW(), NOW(), 0, false, 'system', 'system'
+),
+(
+    '950e8400-e29b-41d4-a716-446655440011',
+    (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
+    (SELECT id FROM field_types WHERE field_size = 'FIELD_5' LIMIT 1),
+    (SELECT id FROM fields WHERE name = 'Sân 7A' LIMIT 1),
+    'Sân 7A-2', true, 'AVAILABLE', 5,
+    NOW(), NOW(), 0, false, 'system', 'system'
+),
+(
+    '950e8400-e29b-41d4-a716-446655440012',
+    (SELECT id FROM venues WHERE slug = 'san-bong-quan-7' LIMIT 1),
+    (SELECT id FROM field_types WHERE field_size = 'FIELD_5' LIMIT 1),
+    (SELECT id FROM fields WHERE name = 'Sân 7A' LIMIT 1),
+    'Sân 7A-3', true, 'AVAILABLE', 6,
+    NOW(), NOW(), 0, false, 'system', 'system'
+)
 ON CONFLICT (id) DO NOTHING;
 
 -- 6. SERVICES (Dịch vụ)
